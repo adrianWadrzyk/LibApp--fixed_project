@@ -30,7 +30,7 @@ namespace LibApp.Controllers
             return View();
         }
 
-        public IActionResult Details(int id)
+        public IActionResult Details(string id)
         {
             var customer = repository.GetCustomerById(id);
 
@@ -55,7 +55,7 @@ namespace LibApp.Controllers
         }
 
         [Authorize(Roles = "Owner")]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(string id)
         {
             var customer = repository.GetCustomerById(id);
             if (customer == null)
@@ -86,14 +86,14 @@ namespace LibApp.Controllers
                 return View("CustomerForm", viewModel);
             }
 
-            if (customer.Id == 0)
+            if (customer.Id.ToString() == null)
             {
+                customer.Id = Guid.NewGuid().ToString();
                 repository.AddCustomer(customer);
-
             }
             else
             {
-                var customerInDb = repository.GetCustomerById(customer.Id);
+                var customerInDb = repository.GetCustomerById(customer.Id.ToString());
                 customerInDb.Name = customer.Name;
                 customerInDb.Birthdate = customer.Birthdate;
                 customerInDb.MembershipTypeId = customer.MembershipTypeId;

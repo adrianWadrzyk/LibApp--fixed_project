@@ -23,12 +23,12 @@ namespace LibApp.Repository
            context.Customers.Add(customer);
         }
         
-        public void DeleteCustomer(int customerId)
+        public void DeleteCustomer(string customerId)
         {
            context.Customers.Remove(GetCustomerById(customerId));
         }
 
-        public Customer GetCustomerById(int customerId)
+        public Customer GetCustomerById(string customerId)
         {
             return context.Customers.Include(c => c.MembershipType).Where(c => c.Id == customerId).SingleOrDefault();
         }

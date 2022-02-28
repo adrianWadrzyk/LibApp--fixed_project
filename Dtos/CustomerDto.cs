@@ -8,7 +8,7 @@ namespace LibApp.Dtos
 {
     public class CustomerDto
     {
-        public int Id { get; set; }
+        public string Id { get; set; }
         [StringLength(255)]
         public string Name { get; set; }
         public bool HasNewsletterSubscribed { get; set; }

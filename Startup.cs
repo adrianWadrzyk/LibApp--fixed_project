@@ -1,6 +1,7 @@
 using LibApp.Data;
 using LibApp.interfaces;
 using LibApp.Interfaces;
+using LibApp.Models;
 using LibApp.Repositories;
 using LibApp.Repository;
 using Microsoft.AspNetCore.Builder;
@@ -38,7 +39,8 @@ namespace LibApp
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<Customer>(options => options.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddScoped<IBookRepository, BookRepository>();
@@ -78,7 +80,7 @@ namespace LibApp
                 endpoints.MapRazorPages();
             });
 
-            AddRoles(serviceProvider);
+            //AddRoles(serviceProvider);
 
         }
 

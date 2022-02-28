@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using LibApp.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -10,6 +11,8 @@ namespace LibApp.Models
     {
         public static void Initialize(IServiceProvider serviceProvider)
         {
+            var userManager = serviceProvider.GetRequiredService<UserManager<Customer>>();
+
             using (var context = new ApplicationDbContext(
                 serviceProvider.GetRequiredService<DbContextOptions<ApplicationDbContext>>()))
             {
@@ -29,13 +32,15 @@ namespace LibApp.Models
                 else
                     Console.WriteLine("Database already seeded with Books.");
 
+                if (!context.Roles.Any())
+                    SeedRoles(context);
+                else
+                    Console.WriteLine("Database already seeded with roles.");
+
                 if (!context.Customers.Any())
-                    SeedCustomers(context);
+                    SeedCustomers(context, userManager);
                 else
                     Console.WriteLine("Database already seeded with Books.");
-
-                context.SaveChanges();
-
             }
         }
 
@@ -74,6 +79,9 @@ namespace LibApp.Models
                  DurationInMonths = 12,
                  DiscountRate = 20
              });
+
+            context.SaveChanges();
+
         }
         private static void SeedBooks(ApplicationDbContext context)
         {
@@ -105,7 +113,10 @@ namespace LibApp.Models
                     DateAdded = DateTime.Now,
                     NumberInStock = 3
                 });
-            }
+
+            context.SaveChanges();
+
+        }
 
         private static void SeedGenres(ApplicationDbContext context)
         {
@@ -141,11 +152,97 @@ namespace LibApp.Models
                     Name = "Horror"
                 }
             );
+
+            context.SaveChanges();
+
         }
 
-        private static void SeedCustomers(ApplicationDbContext context)
+        private static void SeedRoles(ApplicationDbContext context)
         {
-                    context.Customers.AddRange(
+            context.Roles.AddRange(
+                    new IdentityRole
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "User",
+                        NormalizedName = "user"
+                    },
+                    new IdentityRole
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "StoreManager",
+                        NormalizedName = "storemanager"
+                    },
+                    new IdentityRole
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Name = "Owner",
+                        NormalizedName = "owner"
+                    }
+                );
+
+            context.SaveChanges();
+
+        }
+
+        private static void SeedCustomers(ApplicationDbContext context, UserManager<Customer> userManager)
+        {
+            var hasher = new PasswordHasher<Customer>();
+            var c1 = new Customer
+            {
+                Name = "Adrian Wądrzyk",
+                Email = "adrian@wadrzyk.pl",
+                NormalizedEmail = "adrian@wadrzyk.pl",
+                UserName = "adrian@wadrzyk.pl",
+                NormalizedUserName = "adrian@wadrzyk.pl",
+                MembershipTypeId = 1,
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                PasswordHash = hasher.HashPassword(null, "test")
+            };
+
+            userManager.CreateAsync(c1).Wait();
+            userManager.AddToRoleAsync(c1, "owner").Wait();
+
+            var c2 = new Customer
+            {
+                Name = "Jan Kowalski",
+                Email = "jan@kowalski.pl",
+                NormalizedEmail = "jan@kowalski.pl",
+                UserName = "jan@kowalski.pl",
+                NormalizedUserName = "jan@kowalski.pl",
+                MembershipTypeId = 1,
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                PasswordHash = hasher.HashPassword(null, "test")
+            };
+
+            userManager.CreateAsync(c2).Wait();
+            userManager.AddToRoleAsync(c2, "user").Wait();
+
+            var c3 = new Customer
+            {
+                Name = "Ksiadz Robak",
+                Email = "ksiadz@robak.pl",
+                NormalizedEmail = "ksiadz@robak.pl",
+                UserName = "ksiadz@robak.pl",
+                NormalizedUserName = "ksiadz@robak.pl",
+                MembershipTypeId = 1,
+                EmailConfirmed = true,
+                LockoutEnabled = false,
+                SecurityStamp = Guid.NewGuid().ToString(),
+                PasswordHash = hasher.HashPassword(null, "test")
+            };
+
+            userManager.CreateAsync(c3).Wait();
+            userManager.AddToRoleAsync(c3, "storemanager").Wait();
+
+
+            context.SaveChanges();
+
+            /*
+            context.Customers.AddRange(
                  new Customer
                  {
                      Name = "Jan Kowalski",
@@ -167,7 +264,7 @@ namespace LibApp.Models
                      MembershipTypeId = 3,
                      Birthdate = new DateTime(2001, 7, 22)
                  }
-             );
+             ); */
         }
     }
 }

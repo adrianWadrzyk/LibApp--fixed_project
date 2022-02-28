@@ -9,10 +9,10 @@ namespace LibApp.Interfaces
     public interface ICustomerRepository
     {
         IEnumerable<Customer> GetCustomers();
-        Customer GetCustomerById(int customerId);
+        Customer GetCustomerById(string customerId);
         void AddCustomer(Customer customer);
         void UpdateCustomer(Customer customer);
-        void DeleteCustomer(int customerId);
+        void DeleteCustomer(string customerId);
 
         void Save();
     }

@@ -42,7 +42,7 @@ namespace LibApp.Controllers.Api
 
         // GET /api/customers/{id}
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetCustomer(int id)
+        public async Task<IActionResult> GetCustomer(string id)
         {
             Console.WriteLine("START REQUEST");
             var customer = repository.GetCustomerById(id);
@@ -77,7 +77,7 @@ namespace LibApp.Controllers.Api
         // PUT /api/customers/{id}
         [HttpPut("{id}")]
         [Authorize(Roles = "Owner")]
-        public void UpdateCustomer(int id, CustomerDto customerDto)
+        public void UpdateCustomer(string id, CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
             {
@@ -98,7 +98,7 @@ namespace LibApp.Controllers.Api
         // DELETE /api/customers
         [HttpDelete("{id}")]
         [Authorize(Roles = "Owner")]
-        public void DeleteCustomer(int id)
+        public void DeleteCustomer(string id)
         {
             var customerInDb = repository.GetCustomerById(id);
             if (customerInDb == null)
